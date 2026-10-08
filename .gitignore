@@ -1,0 +1,30 @@
+# Dependências e build
+node_modules
+dist
+dist-ssr
+*.local
+
+# Variáveis de ambiente e credenciais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Ferramentas locais
+.claude/
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+desktop.ini
+*.suo
+*.sw?

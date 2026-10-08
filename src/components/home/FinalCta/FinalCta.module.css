@@ -1,0 +1,176 @@
+.section {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--canvas);
+  color: var(--text-primary);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.backdrop > * {
+  position: absolute;
+}
+
+/*
+ * Horizonte: um círculo enorme cujo topo aparece como um arco.
+ * A borda é um degradê azul → prata → laranja — a fusão dos dois universos.
+ *
+ * O topo do arco fica no topo de `.horizonAnchor`, um elemento no fluxo logo
+ * abaixo do conteúdo — assim ele nunca alcança os links, em nenhuma altura de tela.
+ */
+.horizonAnchor {
+  position: relative;
+  height: clamp(7rem, 18vh, 11rem);
+  pointer-events: none;
+}
+
+.horizonAnchor > * {
+  position: absolute;
+}
+
+.planet,
+.horizon,
+.horizonGlow {
+  top: 0;
+  left: 50%;
+  width: max(170vw, 1600px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.planet {
+  background: radial-gradient(50% 50% at 50% 50%, #050608 92%, #0d1016 100%);
+}
+
+.horizon,
+.horizonGlow {
+  background: linear-gradient(
+    90deg,
+    transparent 22%,
+    var(--blue-500) 38%,
+    var(--silver-200) 50%,
+    var(--orange-500) 62%,
+    transparent 78%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+.horizon {
+  padding: 1px;
+  opacity: 0.9;
+}
+
+.horizonGlow {
+  padding: 10px;
+  filter: blur(26px);
+  opacity: 0.55;
+}
+
+.grain {
+  inset: 0;
+  background-image: var(--noise-grain);
+  background-size: 220px;
+  opacity: 0.04;
+}
+
+/* ---------- Conteúdo ---------- */
+.inner {
+  /* Sempre acima das camadas do horizonte */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 64rem;
+  margin-inline: auto;
+  /* Respiro entre o último elemento (aviso) e o topo do arco */
+  padding: var(--section-space) var(--gutter) clamp(3.5rem, 8vh, 5.5rem);
+  text-align: center;
+}
+
+.title {
+  margin-top: clamp(1.5rem, 4vh, 2.25rem);
+}
+
+.lede {
+  max-width: 34rem;
+  margin-top: clamp(1.5rem, 4vh, 2.25rem);
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--silver-200);
+  transition: color 0.3s ease;
+}
+
+.textLink svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.textLink:hover {
+  color: var(--text-primary);
+}
+
+.textLink:hover svg {
+  transform: translateX(3px);
+}
+
+.notice {
+  min-height: 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  color: var(--accent-300);
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s var(--ease-out-expo);
+}
+
+.notice[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 420px) {
+  .actions {
+    width: 100%;
+  }
+
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

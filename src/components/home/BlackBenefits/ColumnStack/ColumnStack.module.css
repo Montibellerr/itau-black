@@ -1,0 +1,93 @@
+.wrap {
+  --card-w: min(64cqi, 72cqb, 560px);
+  --card-thickness: calc(var(--card-w) * 0.016);
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+}
+
+/* Luz fria por trás da coluna */
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--card-w) * 2.2);
+  aspect-ratio: 1;
+  margin: calc(var(--card-w) * -1.1) 0 0 calc(var(--card-w) * -1.1);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(var(--accent-rgb) / 0.2) 0%,
+    rgb(var(--accent-rgb) / 0.07) 42%,
+    rgb(150 170 210 / 0.03) 64%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Reflexo frio no "piso", sob a base da coluna */
+.reflection {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--card-w) * 1.5);
+  height: calc(var(--card-w) * 0.22);
+  margin: calc(var(--card-w) * 0.62) 0 0 calc(var(--card-w) * -0.75);
+  background: radial-gradient(closest-side, rgb(var(--accent-rgb) / 0.22), rgb(var(--accent-rgb) / 0.05) 60%, transparent);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  perspective: calc(var(--card-w) * 3.6);
+  perspective-origin: 50% 32%;
+}
+
+.float,
+.stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* Pose de base (antes do JS): já centrada e inclinada, nunca plana */
+.stage > .card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--card-w);
+  transform: translate(-50%, -50%) rotateX(56deg) rotateZ(-28deg);
+}
+
+/* Flutuação lenta (mesma lista de funções em todos os keyframes) */
+.float {
+  animation: float 12s ease-in-out 1s infinite;
+}
+
+.wrap[data-tier='static'] .float {
+  animation: none;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotateY(0deg);
+  }
+  50% {
+    transform: translate3d(0, -1.2%, 0) rotateY(3deg);
+  }
+}
+
+:global([data-inview='false']) .float {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+}

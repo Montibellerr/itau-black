@@ -1,0 +1,42 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100svh;
+  padding-top: var(--header-h);
+  overflow: clip;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(1rem, 3vw, 3rem);
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vh, 3rem) var(--gutter);
+}
+
+.visual {
+  position: relative;
+  z-index: 1;
+  height: clamp(380px, 70svh, 780px);
+}
+
+/* Tablet e celular: cartões no topo, texto abaixo */
+@media (max-width: 1023px) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: clamp(0.5rem, 2vh, 1.5rem);
+    padding-top: 0;
+  }
+
+  .visual {
+    order: -1;
+    height: clamp(250px, 41svh, 480px);
+    margin-inline: calc(var(--gutter) * -1);
+  }
+}

@@ -1,0 +1,4 @@
+# Quebras de linha LF no repositório, independente do sistema operacional
+* text=auto eol=lf
+*.svg text eol=lf
+*.woff2 binary

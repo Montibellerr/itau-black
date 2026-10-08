@@ -1,0 +1,220 @@
+/*
+ * Transição entre universos: seção alta + palco fixo.
+ * A altura define a "duração" da cena em scroll.
+ */
+.scene {
+  position: relative;
+  height: 270svh;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  place-items: center;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.layers {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.layers > * {
+  position: absolute;
+}
+
+/* Universo Itaú: off-white com calor sutil vindo de baixo */
+.light {
+  inset: 0;
+  background:
+    radial-gradient(80% 55% at 50% 100%, rgb(var(--orange-rgb) / 0.07), transparent 70%),
+    var(--paper);
+}
+
+/* Universo Black */
+.dark {
+  inset: 0;
+  will-change: opacity;
+}
+
+.toLight .dark {
+  background:
+    radial-gradient(120% 80% at 50% 0%, #0a0c10 0%, #050608 60%),
+    #050608;
+}
+
+.toDark .dark {
+  background:
+    radial-gradient(120% 80% at 50% 100%, #0e1016 0%, #07080a 62%),
+    #07080a;
+}
+
+/* Luz fria (azul) centrada no palco */
+.cool {
+  inset: 8% -15%;
+  background: radial-gradient(
+    ellipse 50% 46% at 50% 50%,
+    rgb(var(--blue-rgb) / 0.22) 0%,
+    rgb(var(--blue-rgb) / 0.08) 45%,
+    transparent 100%
+  );
+  will-change: opacity, transform;
+}
+
+/* Luz quente (laranja) — "amanhecer"; o raio termina antes da base do palco */
+.warm {
+  inset: 15% -10% 5%;
+  background: radial-gradient(
+    ellipse 50% 46% at 50% 56%,
+    rgb(var(--orange-rgb) / 0.34) 0%,
+    rgb(var(--orange-rgb) / 0.12) 42%,
+    transparent 78%
+  );
+  will-change: opacity, transform;
+}
+
+/* Reflexo prateado diagonal (somente na volta ao Black) */
+.sheen {
+  inset: -20% 0;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgb(200 215 255 / 0.05) 46%,
+    rgb(225 233 255 / 0.13) 50%,
+    rgb(200 215 255 / 0.05) 54%,
+    transparent 62%
+  );
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* Passagem em degradê usada apenas no modo de movimento reduzido */
+.blend {
+  inset: 0 0 auto;
+  height: 45%;
+  display: none;
+}
+
+.grain {
+  inset: 0;
+  background-image: var(--noise-grain);
+  background-size: 220px;
+  opacity: 0.04;
+}
+
+/* ---------- Conteúdo ---------- */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 72rem;
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: var(--eyebrow-accent, currentColor);
+  opacity: 0.8;
+}
+
+.title {
+  font-size: clamp(3rem, 1rem + 7.4vw, 9.25rem);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.line {
+  display: block;
+  padding-bottom: 0.06em;
+  will-change: transform, opacity;
+}
+
+.accent {
+  text-shadow: 0 0 0.3em currentColor;
+}
+
+.toDark .accent {
+  text-shadow: 0 0 0.45em rgb(var(--blue-rgb) / 0.45);
+}
+
+.toLight .accent {
+  text-shadow: none;
+}
+
+.text {
+  max-width: 34rem;
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  font-size: clamp(1.05rem, 0.98rem + 0.35vw, 1.3rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.rule {
+  width: min(18rem, 50vw);
+  height: 1px;
+  margin-top: clamp(2rem, 6vh, 3.5rem);
+  transform: scaleX(0);
+  background: linear-gradient(90deg, transparent, var(--rule-color), transparent);
+}
+
+.toLight .rule {
+  --rule-color: var(--orange-500);
+}
+
+.toDark .rule {
+  --rule-color: var(--blue-400);
+  box-shadow: 0 0 14px rgb(var(--blue-rgb) / 0.55);
+}
+
+@media (max-width: 720px) {
+  .scene {
+    height: 230svh;
+  }
+}
+
+/* ---------- Movimento reduzido: seção comum com passagem em degradê ---------- */
+.scene[data-static] {
+  height: auto;
+}
+
+.scene[data-static] .stage {
+  position: relative;
+  height: auto;
+  min-height: 90svh;
+  padding-block: 22svh 14svh;
+}
+
+.scene[data-static] .blend {
+  display: block;
+}
+
+.toLight[data-static] .blend {
+  background: linear-gradient(180deg, #050608 0%, rgb(5 6 8 / 0) 100%);
+}
+
+.toDark[data-static] .blend {
+  background: linear-gradient(180deg, var(--paper) 0%, rgb(245 242 237 / 0) 100%);
+}

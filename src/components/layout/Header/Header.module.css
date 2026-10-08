@@ -1,0 +1,274 @@
+/*
+ * Header fixo que acompanha a jornada visual.
+ *  - data-scrolled="false": transparente sobre a hero (aparência original).
+ *  - data-scrolled="true":  barra de vidro na cor do universo sob o header.
+ *  - data-theme="black" | "light": tokens do universo (ver tokens.css).
+ * Todas as mudanças são transições CSS suaves, sem trocas bruscas.
+ */
+.header {
+  --theme-transition:
+    color var(--theme-duration) var(--ease-out-quart),
+    background-color var(--theme-duration) var(--ease-out-quart),
+    border-color var(--theme-duration) var(--ease-out-quart),
+    opacity var(--theme-duration) var(--ease-out-quart);
+
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  color: var(--text-primary);
+  transition: color var(--theme-duration) var(--ease-out-quart);
+  animation: header-in 1.2s var(--ease-out-expo) 0.15s both;
+}
+
+/* Gradiente de leitura sobre a hero (somente no topo) */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -2.5rem;
+  z-index: -1;
+  background: linear-gradient(180deg, rgb(6 7 10 / 0.8) 0%, rgb(6 7 10 / 0) 100%);
+  pointer-events: none;
+  transition: opacity var(--theme-duration) var(--ease-out-quart);
+}
+
+.header[data-scrolled='true']::before {
+  opacity: 0;
+}
+
+/* Barra de vidro: aparece ao rolar e assume a cor do universo */
+.glass {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-bottom: 1px solid var(--line-subtle);
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--theme-transition);
+}
+
+.header[data-scrolled='true'] .glass {
+  opacity: 1;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  height: var(--header-h);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 12px;
+}
+
+/* Duas marcas sobrepostas: prata (Black) e laranja (Itaú) em crossfade */
+.markStack {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.markBlack,
+.markLight {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity var(--theme-duration) var(--ease-out-quart);
+}
+
+.markBlack {
+  filter: drop-shadow(0 0 10px rgb(var(--blue-rgb) / 0.35));
+}
+
+.markLight {
+  opacity: 0;
+}
+
+.header[data-theme='light'] .markBlack {
+  opacity: 0;
+}
+
+.header[data-theme='light'] .markLight {
+  opacity: 1;
+}
+
+.nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.navList {
+  display: flex;
+  gap: clamp(1.5rem, 2.6vw, 2.75rem);
+}
+
+.navLink {
+  position: relative;
+  display: inline-block;
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0.2rem;
+  left: 0;
+  height: 1px;
+  background-color: var(--accent-500);
+  box-shadow: 0 0 6px rgb(var(--accent-rgb) / 0.6);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition:
+    transform 0.6s var(--ease-out-expo),
+    background-color var(--theme-duration) var(--ease-out-quart);
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.menuButton {
+  display: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line-default);
+  border-radius: 999px;
+  background-color: rgb(var(--silver-rgb) / 0.04);
+  transition: var(--theme-transition);
+}
+
+.menuButton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.menuButton:hover {
+  background-color: rgb(var(--accent-rgb) / 0.1);
+  border-color: rgb(var(--accent-rgb) / 0.45);
+}
+
+/* ---------- Menu móvel ---------- */
+.panel {
+  position: absolute;
+  top: calc(var(--header-h) - 0.25rem);
+  right: var(--gutter);
+  left: var(--gutter);
+  display: grid;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line-subtle);
+  border-radius: 1.25rem;
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.98);
+  transform-origin: top center;
+  transition:
+    opacity 0.3s ease,
+    transform 0.5s var(--ease-out-expo),
+    visibility 0s linear 0.5s,
+    background-color var(--theme-duration) var(--ease-out-quart),
+    border-color var(--theme-duration) var(--ease-out-quart);
+}
+
+.panel[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.5s var(--ease-out-expo),
+    visibility 0s,
+    background-color var(--theme-duration) var(--ease-out-quart),
+    border-color var(--theme-duration) var(--ease-out-quart);
+}
+
+.panelList {
+  display: grid;
+}
+
+.panelLink {
+  display: block;
+  padding: 0.9rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+}
+
+.panelLink:hover {
+  background-color: rgb(var(--silver-rgb) / 0.08);
+}
+
+.panelCta {
+  width: 100%;
+}
+
+@keyframes header-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@media (max-width: 959px) {
+  .nav,
+  .cta {
+    display: none;
+  }
+
+  .menuButton {
+    display: inline-grid;
+  }
+}
+
+@media (min-width: 960px) {
+  .panel {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header {
+    animation: none;
+  }
+
+  .panel,
+  .panel[data-open='true'],
+  .navLink::after {
+    transition-duration: 0.01ms;
+  }
+}

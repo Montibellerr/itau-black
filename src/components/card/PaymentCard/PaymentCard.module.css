@@ -1,0 +1,305 @@
+/*
+ * Cartão 3D — universo Black
+ * Proporção ISO/IEC 7810 ID-1 (85,6 × 53,98 mm). Tamanhos internos em `cqi`
+ * (unidades de container) para que todo o conteúdo escale com o cartão.
+ *
+ * Linguagem visual: superfície preta/grafite acetinada, bordas iluminadas em
+ * azul elétrico, detalhes em prata e reflexos frios.
+ */
+.card {
+  --radius: 4.4% / 6.95%;
+  --card-size: var(--card-w, 420px);
+  --thickness: var(--card-thickness, 5px);
+
+  /* Superfície */
+  --face-bg: #0d0e11;
+  --texture: var(--noise-grain);
+  --texture-size: 220px;
+  --texture-opacity: 0.08;
+  --texture-blend: overlay;
+  --pattern-color: rgb(150 180 255 / 0.05);
+
+  /* Borda iluminada (espessura física do cartão) */
+  --edge-bg: linear-gradient(160deg, var(--accent-200) 0%, var(--accent-400) 22%, var(--accent-600) 62%, var(--accent-700) 100%);
+  --card-accent-rgb: var(--accent-rgb);
+  --edge-glow: rgb(var(--card-accent-rgb) / 0.3);
+
+  /* Impressão: prata e branco suave */
+  --ink: rgb(234 238 246 / 0.9);
+  --ink-muted: rgb(186 195 212 / 0.58);
+  --tier-fill: linear-gradient(180deg, var(--accent-200) 0%, var(--accent-400) 45%, var(--accent-500) 100%);
+  --tier-glow: rgb(var(--card-accent-rgb) / 0.55);
+
+  /* Luz: reflexos frios */
+  --glare-rgb: 208 224 255;
+  --glare-strength: 0.17;
+  --glare-blend: screen;
+  --sheen-rgb: 216 230 255;
+  --sheen-strength: 0.2;
+  --rim-highlight: rgb(222 232 255 / 0.62);
+  --rim-accent: 0.92;
+
+  /* Chip prata */
+  --chip-1: #f3f5f8;
+  --chip-2: #a4aab5;
+  --chip-3: #e5e8ee;
+  --chip-4: #6c727e;
+  --chip-line: #262b35;
+
+  position: relative;
+  aspect-ratio: 85.6 / 53.98;
+  transform-style: preserve-3d;
+}
+
+/* ---------- Espessura: fatias em Z (a "borda de luz" azul) ---------- */
+.slice {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--edge-bg);
+  transform: translateZ(calc(var(--thickness) * var(--depth) * -1));
+}
+
+/* A última fatia é o "verso": projeta a sombra no espaço e espalha um leve brilho azul */
+.slice:last-of-type {
+  box-shadow:
+    0 0 calc(var(--card-size) * 0.03) var(--edge-glow),
+    0 calc(var(--card-size) * 0.075) calc(var(--card-size) * 0.14) calc(var(--card-size) * -0.03) rgb(0 0 0 / 0.78),
+    0 calc(var(--card-size) * 0.02) calc(var(--card-size) * 0.04) rgb(0 0 0 / 0.5);
+}
+
+/* ---------- Face ---------- */
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--face-bg);
+  color: var(--ink);
+  container-type: inline-size;
+  backface-visibility: hidden;
+}
+
+.texture {
+  position: absolute;
+  inset: 0;
+  background-image: var(--texture);
+  background-size: var(--texture-size);
+  opacity: var(--texture-opacity);
+  mix-blend-mode: var(--texture-blend);
+}
+
+.pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  color: var(--pattern-color);
+  -webkit-mask-image: radial-gradient(130% 110% at 100% 100%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(130% 110% at 100% 100%, #000 15%, transparent 72%);
+}
+
+/* ---------- Conteúdo impresso ---------- */
+.content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 6.4cqi 7cqi 6.2cqi;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  width: 10.5cqi;
+  height: 10.5cqi;
+  filter: drop-shadow(0 0 1.2cqi rgb(var(--card-accent-rgb) / 0.35));
+}
+
+.contactless {
+  width: 6cqi;
+  height: 6cqi;
+  color: var(--ink-muted);
+}
+
+.chip {
+  align-self: center;
+  width: 12.5cqi;
+  height: auto;
+  margin-top: 1cqi;
+  filter: drop-shadow(0 0.25cqi 0.4cqi rgb(0 0 0 / 0.45));
+}
+
+/*
+ * Linha inferior: somente a categoria, à direita. A altura mínima preserva a
+ * diagramação original (chip e categoria nas mesmas posições).
+ */
+.bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 8.05cqi;
+}
+
+.tier {
+  font-size: 5.8cqi;
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  background: var(--tier-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 1cqi var(--tier-glow));
+}
+
+/* ---------- Luz ---------- */
+
+/* Faixa diagonal de brilho: varredura na entrada e resposta ao movimento */
+.sheen {
+  position: absolute;
+  inset: -12% 0;
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgb(var(--sheen-rgb) / calc(var(--sheen-strength) * 0.35)) 44%,
+    rgb(var(--sheen-rgb) / var(--sheen-strength)) 50%,
+    rgb(var(--sheen-rgb) / calc(var(--sheen-strength) * 0.35)) 56%,
+    transparent 66%
+  );
+  transform: translate3d(var(--sx, -140%), 0, 0);
+  opacity: var(--so, 0);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Reflexo especular amplo (elipse na proporção do cartão), movido pela luz/ponteiro */
+.glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse closest-side,
+    rgb(var(--glare-rgb) / var(--glare-strength)) 0%,
+    rgb(var(--glare-rgb) / calc(var(--glare-strength) * 0.45)) 38%,
+    transparent 100%
+  );
+  transform: translate3d(var(--gx, -24%), var(--gy, -30%), 0) scale(1.35);
+  opacity: var(--go, 0.7);
+  mix-blend-mode: var(--glare-blend);
+  pointer-events: none;
+}
+
+/* Somente quando os reflexos animam a cada frame */
+.live .glare,
+.live .sheen {
+  will-change: transform, opacity;
+}
+
+/*
+ * Aro de luz: realce prateado no canto da luz-chave que se transforma em
+ * azul elétrico ao longo das bordas — como o filete iluminado da referência.
+ */
+.rim {
+  position: absolute;
+  inset: 0;
+  padding: max(1px, 0.28cqi);
+  border-radius: inherit;
+  background: linear-gradient(
+    140deg,
+    var(--rim-highlight) 0%,
+    rgb(var(--card-accent-rgb) / calc(var(--rim-accent) * 0.42)) 16%,
+    rgb(var(--card-accent-rgb) / calc(var(--rim-accent) * 0.26)) 48%,
+    rgb(var(--card-accent-rgb) / calc(var(--rim-accent) * 0.6)) 76%,
+    rgb(var(--card-accent-rgb) / var(--rim-accent)) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* Perspectiva atmosférica para cartões ao fundo (as bordas azuis continuam acesas) */
+.shade {
+  position: absolute;
+  inset: 0;
+  background: #040507;
+  opacity: var(--shade, 0);
+  pointer-events: none;
+}
+
+/* ---------- Acabamentos ---------- */
+
+/* Black: preto acetinado com luz suave no alto */
+.black {
+  --face-bg:
+    radial-gradient(120% 95% at 16% 0%, rgb(104 110 128 / 0.5) 0%, transparent 60%),
+    linear-gradient(162deg, #33353c 0%, #1c1d22 34%, #111216 66%, #090a0c 100%);
+}
+
+/* Grafite: metal escovado escuro */
+.graphite {
+  --face-bg:
+    radial-gradient(110% 90% at 14% 0%, rgb(110 116 130 / 0.32) 0%, transparent 55%),
+    linear-gradient(158deg, #393c43 0%, #24262c 36%, #16171b 70%, #0e0f12 100%);
+  --texture: var(--noise-brushed);
+  --texture-size: 400px 160px;
+  --texture-opacity: 0.16;
+}
+
+/* Ônix: preto profundo com subtom azul refletido */
+.onyx {
+  --face-bg:
+    radial-gradient(110% 90% at 88% 100%, rgb(var(--card-accent-rgb) / 0.12) 0%, transparent 60%),
+    radial-gradient(110% 90% at 14% 0%, rgb(96 108 136 / 0.3) 0%, transparent 55%),
+    linear-gradient(160deg, #23262e 0%, #12141a 42%, #090a0e 100%);
+  --pattern-color: rgb(120 160 255 / 0.08);
+}
+
+/* Titânio: grafite metálico mais claro, escovado */
+.titanium {
+  --face-bg:
+    radial-gradient(110% 90% at 14% 0%, rgb(140 146 160 / 0.32) 0%, transparent 55%),
+    linear-gradient(150deg, #4a4e57 0%, #2e3138 35%, #1c1e23 70%, #121317 100%);
+  --texture: var(--noise-brushed);
+  --texture-size: 400px 160px;
+  --texture-opacity: 0.22;
+  --pattern-color: rgb(200 215 245 / 0.06);
+}
+
+/* Itaú: laranja clássico do universo tradicional, com borda e reflexos quentes */
+.itau {
+  --face-bg:
+    radial-gradient(120% 95% at 14% 0%, rgb(255 214 170 / 0.55) 0%, transparent 58%),
+    linear-gradient(150deg, #ff9a3a 0%, #f27c12 30%, #e06800 62%, #b85400 100%);
+  --edge-bg: linear-gradient(160deg, #ffd2a8 0%, #f08a2c 28%, #c25a00 70%, #8a3d00 100%);
+  --card-accent-rgb: 255 196 140;
+  --edge-glow: rgb(var(--orange-rgb) / 0.32);
+  --ink: rgb(255 255 255 / 0.96);
+  --ink-muted: rgb(255 244 232 / 0.78);
+  --pattern-color: rgb(255 255 255 / 0.14);
+  --texture: var(--noise-brushed);
+  --texture-size: 400px 160px;
+  --texture-opacity: 0.14;
+  --tier-fill: linear-gradient(180deg, #ffffff 0%, #ffe6cf 100%);
+  --tier-glow: rgb(120 50 0 / 0.25);
+  --glare-rgb: 255 240 225;
+  --glare-strength: 0.3;
+  --glare-blend: soft-light;
+  --rim-highlight: rgb(255 245 235 / 0.75);
+  --rim-accent: 0.6;
+  --chip-1: #f6e8c2;
+  --chip-2: #c9a45e;
+  --chip-3: #f8eecf;
+  --chip-4: #9d7a3c;
+  --chip-line: #5a441c;
+}

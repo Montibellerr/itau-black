@@ -1,0 +1,50 @@
+/* Tipografia de seção — segue o universo ativo via tokens semânticos */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 2.25rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent-500), rgb(var(--accent-rgb) / 0));
+}
+
+.title {
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  color: var(--text-primary);
+}
+
+.lg {
+  font-size: clamp(2.4rem, 1.4rem + 3.6vw, 4.75rem);
+}
+
+.xl {
+  font-size: clamp(2.8rem, 1.2rem + 5.6vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.muted {
+  background: var(--title-muted-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.period {
+  color: var(--accent-500);
+  text-shadow: 0 0 0.35em rgb(var(--accent-rgb) / 0.4);
+}

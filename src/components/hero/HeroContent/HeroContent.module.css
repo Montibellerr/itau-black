@@ -1,0 +1,135 @@
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 40rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  animation: fade-up 1.2s var(--ease-out-expo) var(--delay) both;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 2.25rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent-400), rgb(var(--accent-rgb) / 0));
+  box-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.45);
+}
+
+.title {
+  margin-top: clamp(1.25rem, 2.8vh, 2rem);
+  font-size: clamp(2.75rem, min(6.4vw, 12.5vh), 7rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+/* Máscara de revelação: cada linha sobe de dentro do próprio recorte */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.lineInner {
+  display: inline-block;
+  animation: line-rise 1.4s var(--ease-out-expo) var(--delay) both;
+}
+
+/* Segunda linha em prata metálico frio */
+.accent {
+  padding-right: 0.06em;
+  background: linear-gradient(180deg, var(--silver-50) 0%, var(--silver-300) 60%, var(--silver-400) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.period {
+  color: var(--accent-400);
+  text-shadow: 0 0 0.35em rgb(var(--accent-rgb) / 0.55);
+}
+
+.lede {
+  margin-top: clamp(1.25rem, 3vh, 2rem);
+  max-width: 29rem;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+  animation: fade-up 1.2s var(--ease-out-expo) var(--delay) both;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: clamp(1.75rem, 4.5vh, 3rem);
+  animation: fade-up 1.2s var(--ease-out-expo) var(--delay) both;
+}
+
+@keyframes line-rise {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  .title {
+    font-size: clamp(2.6rem, 9.6vw, 4.75rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .actions {
+    width: 100%;
+  }
+
+  .actions > * {
+    flex: 1 1 auto;
+  }
+}
+
+/* Movimento reduzido: preferência do sistema ou nível "static" forçado */
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow,
+  .lineInner,
+  .lede,
+  .actions {
+    animation: fade 0.6s ease both;
+  }
+}
+
+:global([data-tier='static']) .eyebrow,
+:global([data-tier='static']) .lineInner,
+:global([data-tier='static']) .lede,
+:global([data-tier='static']) .actions {
+  animation: fade 0.6s ease both;
+}

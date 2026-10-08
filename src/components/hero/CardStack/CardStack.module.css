@@ -1,0 +1,136 @@
+/*
+ * O wrap é um container de tamanho: a largura do cartão deriva do espaço
+ * disponível (cqi/cqb), então a composição nunca ultrapassa sua área.
+ */
+.wrap {
+  --card-w: min(64cqi, 90cqb, 600px);
+  --card-thickness: calc(var(--card-w) * 0.012);
+  --float-amp: 0.7%;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  perspective: calc(var(--card-w) * 3.4);
+  perspective-origin: 50% 44%;
+}
+
+.float,
+.stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.stage > .card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--card-w);
+}
+
+/* Flutuação contínua: animação de compositor, independente do JS */
+.float {
+  animation: float 10s ease-in-out 2.4s infinite;
+}
+
+.wrap[data-tier='lite'] {
+  --float-amp: 1.4%;
+}
+
+.wrap[data-tier='static'] .float {
+  animation: none;
+}
+
+/*
+ * Todos os keyframes usam a mesma lista de funções (identidade explícita em vez
+ * de `transform: none`): a interpolação acontece função a função e evita uma
+ * falha de pintura observada no Chromium com a subárvore preserve-3d.
+ */
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: translate3d(0, calc(var(--float-amp) * -1), 0) rotateX(0.8deg) rotateZ(-0.4deg);
+  }
+  75% {
+    transform: translate3d(0, var(--float-amp), 0) rotateX(-0.8deg) rotateZ(0.4deg);
+  }
+}
+
+/* Luz ambiente fria por trás do baralho: núcleo azul com halo prateado */
+.ambient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--card-w) * 2.3);
+  aspect-ratio: 1;
+  margin: calc(var(--card-w) * -1.15) 0 0 calc(var(--card-w) * -1.15);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(var(--accent-rgb) / 0.26) 0%,
+    rgb(var(--accent-rgb) / 0.1) 36%,
+    rgb(150 170 210 / 0.035) 62%,
+    transparent 100%
+  );
+  animation:
+    ambient-in 2.6s var(--ease-out-quart) 0.2s both,
+    ambient-breathe 9s ease-in-out 2.8s infinite;
+  pointer-events: none;
+}
+
+/* Sombra de contato no "chão", reforça a sensação de flutuação */
+.floorShadow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--card-w) * 1.6);
+  height: calc(var(--card-w) * 0.24);
+  margin-top: calc(var(--card-w) * 0.52);
+  margin-left: calc(var(--card-w) * -0.8);
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.75), rgb(0 0 0 / 0.32) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wrap[data-tier='full'] .ambient,
+.wrap[data-tier='full'] .floorShadow {
+  will-change: transform;
+}
+
+@keyframes ambient-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+/* Fora da viewport, animações contínuas ficam pausadas */
+:global([data-inview='false']) .float,
+:global([data-inview='false']) .ambient {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float,
+  .ambient {
+    animation: none;
+  }
+}

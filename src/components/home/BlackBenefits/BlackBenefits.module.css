@@ -1,0 +1,180 @@
+.section {
+  position: relative;
+  isolation: isolate;
+  /* `clip` (e não `hidden`) contém a luz da coluna sem quebrar o sticky */
+  overflow-x: clip;
+  background: var(--canvas);
+  color: var(--text-primary);
+}
+
+/* Atmosfera fria e controlada — coerente com a hero, sem repeti-la */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(50% 40% at 78% 30%, rgb(var(--accent-rgb) / 0.08), transparent 70%),
+    radial-gradient(40% 35% at 10% 85%, rgb(150 175 220 / 0.05), transparent 70%),
+    var(--canvas);
+  pointer-events: none;
+}
+
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--noise-grain);
+  background-size: 220px;
+  opacity: 0.04;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 5vw, 6rem);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.content {
+  padding-block: calc(var(--section-space) * 0.9) 22svh;
+}
+
+.header {
+  display: grid;
+  gap: clamp(1.25rem, 3vh, 2rem);
+}
+
+.lede {
+  max-width: 30rem;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ---------- Lista de benefícios ---------- */
+.list {
+  display: grid;
+  margin-top: clamp(3rem, 10vh, 6rem);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.75rem);
+  padding-block: clamp(2rem, 10vh, 5.5rem);
+  border-top: 1px solid var(--line-subtle);
+}
+
+/* Item ativo em destaque; os demais esmaecem (somente após a revelação) */
+@media (min-width: 1024px) {
+  .list:has([data-active='true']) .item[data-revealed='true']:not([data-active='true']) {
+    opacity: 0.36;
+  }
+}
+
+.orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid rgb(var(--accent-rgb) / 0.32);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 25%, rgb(255 255 255 / 0.12), transparent 60%),
+    linear-gradient(160deg, #1b1e26, #0b0c10);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 6px rgb(var(--accent-rgb) / 0.04),
+    0 0 26px -6px rgb(var(--accent-rgb) / 0.45);
+  color: var(--accent-300);
+  transition:
+    box-shadow 0.8s var(--ease-out-expo),
+    border-color 0.6s ease;
+}
+
+.orb svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.item[data-active='true'] .orb {
+  border-color: rgb(var(--accent-rgb) / 0.6);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 0 0 6px rgb(var(--accent-rgb) / 0.08),
+    0 0 40px -4px rgb(var(--accent-rgb) / 0.7);
+}
+
+.itemBody {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 0.35rem;
+}
+
+.index {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-300);
+}
+
+.itemTitle {
+  font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.itemText {
+  max-width: 28rem;
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  line-height: 1.65;
+  color: var(--silver-300);
+}
+
+/* ---------- Coluna de cartões ---------- */
+.visual {
+  position: relative;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+@media (max-width: 1023px) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .visual {
+    order: -1;
+    height: min(118vw, 600px);
+    margin-inline: calc(var(--gutter) * -1);
+    margin-top: clamp(2rem, 6vh, 4rem);
+  }
+
+  .sticky {
+    position: static;
+    height: 100%;
+  }
+
+  .content {
+    padding-block: clamp(1rem, 4vh, 2rem) var(--section-space);
+  }
+
+  .list {
+    margin-top: clamp(2rem, 6vh, 3rem);
+  }
+
+  .item {
+    padding-block: clamp(1.75rem, 5vh, 2.5rem);
+  }
+}

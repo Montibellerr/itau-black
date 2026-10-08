@@ -1,0 +1,99 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.backdrop > * {
+  position: absolute;
+}
+
+/* Base: preto profundo com um "palco" grafite frio atrás dos cartões */
+.base {
+  inset: 0;
+  background:
+    radial-gradient(60% 55% at 70% 46%, #1a1d24 0%, #111318 40%, rgb(11 12 15 / 0) 78%),
+    radial-gradient(120% 80% at 30% 0%, #101216 0%, #08090c 55%, #050608 100%);
+}
+
+/* Luz-chave fria e suave vinda do alto, à direita */
+.keyLight {
+  top: -35%;
+  left: 45%;
+  width: 70%;
+  height: 100%;
+  background: radial-gradient(closest-side, rgb(214 226 255 / 0.075), rgb(214 226 255 / 0.02) 55%, transparent);
+  animation: lights-on 2.8s var(--ease-out-quart) 0.1s both;
+}
+
+/* Feixe diagonal prateado — iluminação de estúdio */
+.beam {
+  top: -25%;
+  right: 22%;
+  width: 18%;
+  height: 150%;
+  background: linear-gradient(180deg, rgb(220 230 250 / 0.07) 0%, rgb(220 230 250 / 0.015) 50%, transparent 78%);
+  transform: rotate(28deg);
+  transform-origin: top center;
+  filter: blur(30px);
+  animation: lights-on 3.2s var(--ease-out-quart) 0.4s both;
+}
+
+/* Contraluz azul muito sutil, próximo à base da composição */
+.rimLight {
+  right: -10%;
+  bottom: -30%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(closest-side, rgb(var(--accent-rgb) / 0.12), rgb(var(--accent-rgb) / 0.035) 55%, transparent);
+  animation: lights-on 3.4s var(--ease-out-quart) 0.6s both;
+}
+
+/* Luz que segue o cursor (somente no nível de movimento "full") */
+.cursorLight {
+  top: 0;
+  left: 0;
+  width: min(56rem, 90vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(200 216 255 / 0.05), rgb(var(--accent-rgb) / 0.018) 45%, transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Piso: escurece a base e ancora a composição */
+.floor {
+  inset: auto 0 0;
+  height: 40%;
+  background: linear-gradient(180deg, transparent, rgb(0 0 0 / 0.55));
+}
+
+/* Grão de filme estático */
+.grain {
+  inset: 0;
+  background-image: var(--noise-grain);
+  background-size: 220px;
+  opacity: 0.045;
+}
+
+.vignette {
+  inset: 0;
+  background: radial-gradient(130% 100% at 55% 45%, transparent 50%, rgb(0 0 0 / 0.62) 100%);
+}
+
+@keyframes lights-on {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keyLight,
+  .beam,
+  .rimLight {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+  }
+}
